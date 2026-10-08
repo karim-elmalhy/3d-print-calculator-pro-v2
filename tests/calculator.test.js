@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {calculate} from "../src/core/calculator.js";
+const base={grams:100,filamentPrice:500,hours:2,quantity:1,plates:1,plateMode:"parallel",watts:200,electricityRate:2,printerPrice:12000,lifetimeHours:6000,maintenancePerHour:1,labor:10,postProcessing:0,packaging:0,shipping:0,marketing:0,setupFee:0,riskPct:0,minPrintCharge:0,minOrder:0,pricingMode:"margin",targetPct:40,minMarginPct:20,discountPct:0,taxPct:0};
+test("filament and electricity costs are calculated",()=>{const r=calculate(base);assert.equal(r.filamentCost,50);assert.equal(r.electricity,0.8);});
+test("gross margin differs from markup",()=>{const r=calculate(base);assert.ok(Math.abs(r.targetPrice-r.cost/0.6)<1e-8);assert.ok(r.markup>r.margin);});
+test("markup mode calculates cost plus markup",()=>{const r=calculate({...base,pricingMode:"markup",targetPct:50});assert.equal(r.targetPrice,r.cost*1.5);});
+test("parallel mode uses total plate time; sequential multiplies time by quantity",()=>{const p=calculate({...base,quantity:3,plateMode:"parallel"});const s=calculate({...base,quantity:3,plateMode:"sequential"});assert.equal(p.effectiveHours,2);assert.equal(s.effectiveHours,6);});
+test("risk allowance and tax are separate",()=>{const r=calculate({...base,riskPct:10,taxPct:14});assert.ok(r.risk>0);assert.ok(r.tax>0);});
+test("STL estimate returns a caution",()=>{assert.ok(calculate({...base,source:"stl"}).warnings.some(w=>w.includes("STL")));});

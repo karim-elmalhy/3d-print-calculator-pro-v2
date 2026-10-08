@@ -1,0 +1,10 @@
+{
+  "name": "ELMALHY.3D Business Manager",
+  "short_name": "ELMALHY.3D",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#111827",
+  "lang": "ar",
+  "dir": "rtl"
+}
